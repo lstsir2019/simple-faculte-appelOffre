@@ -18,3 +18,4 @@ public interface AppelOffreDao extends JpaRepository<AppelOffre, Long> {
 
     public AppelOffre findByObjectif(String Objectif);
 }
+
