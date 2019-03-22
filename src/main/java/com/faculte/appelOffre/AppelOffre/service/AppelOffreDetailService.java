@@ -17,6 +17,6 @@ public interface AppelOffreDetailService {
 
     public int saveAppelOffreDetails(AppelOffreDetail appelOffreDetail);
 
-    public List<AppelOffre> findByAppelOffre(AppelOffre appelOffre);
+    public List<AppelOffreDetail> findByAppelOffreObjectif(String objectif);
 
 }

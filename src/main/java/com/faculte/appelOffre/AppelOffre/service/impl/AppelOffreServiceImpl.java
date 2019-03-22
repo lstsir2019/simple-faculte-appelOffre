@@ -67,4 +67,9 @@ public class AppelOffreServiceImpl implements AppelOffreService {
         appelOffre.setMontantHT(total);
     }
 
+    @Override
+    public List<AppelOffre> findAll() {
+        return appelOffreDao.findAll();
+    }
+
 }

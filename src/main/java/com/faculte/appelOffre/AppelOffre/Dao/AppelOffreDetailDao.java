@@ -17,5 +17,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface AppelOffreDetailDao extends JpaRepository<AppelOffreDetail, Long>{
-    public List<AppelOffre> findByAppelOffre(AppelOffre appelOffre);
+    public List<AppelOffreDetail> findByAppelOffreObjectif(String objectif);
 }

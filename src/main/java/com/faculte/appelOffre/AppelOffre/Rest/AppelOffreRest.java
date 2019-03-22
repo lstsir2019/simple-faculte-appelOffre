@@ -7,11 +7,16 @@ package com.faculte.appelOffre.AppelOffre.Rest;
 
 import com.faculte.appelOffre.AppelOffre.Rest.Converter.AbstractConverter;
 import com.faculte.appelOffre.AppelOffre.Rest.Converter.AppelOffreConverter;
+import com.faculte.appelOffre.AppelOffre.Rest.Vo.AppelOffreDetailVo;
 import com.faculte.appelOffre.AppelOffre.Rest.Vo.AppelOffreVo;
 import com.faculte.appelOffre.AppelOffre.bean.AppelOffre;
+import com.faculte.appelOffre.AppelOffre.bean.AppelOffreDetail;
+import com.faculte.appelOffre.AppelOffre.service.AppelOffreDetailService;
 import com.faculte.appelOffre.AppelOffre.service.AppelOffreService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author YSN
  */
 @RestController()
+@CrossOrigin(origins = {"http://localhost:4200"})
 @RequestMapping("/AppelOffre/AppelOffres")
 public class AppelOffreRest {
 
@@ -31,13 +37,31 @@ public class AppelOffreRest {
     private AppelOffreService appelOffreService;
 
     @Autowired
+    private AppelOffreDetailService appelOffreDetailService;
+
+    @Autowired
     @Qualifier("appelOffreConverter")
     private AbstractConverter<AppelOffre, AppelOffreVo> appelOffreConverter;
 
+    @Autowired
+    @Qualifier("appelOffreDetailConverter")
+    private AbstractConverter<AppelOffreDetail, AppelOffreDetailVo> appelOffreDetailConverter;
+
+    @GetMapping("/objectif/{objectif}/appeloffre-details")
+    public List<AppelOffreDetailVo> findByAppelOffre(@PathVariable("objectif")String objectif) {
+        final List<AppelOffreDetail> appelOffreDetails = appelOffreDetailService.findByAppelOffreObjectif(objectif);
+        return appelOffreDetailConverter.toVo(appelOffreDetails);
+    }
+
+    @GetMapping("/")
+    public List<AppelOffreVo> findAll() {
+        return appelOffreConverter.toVo(appelOffreService.findAll());
+    }
+
     @PostMapping("/")
     public AppelOffreVo saveAppelOffreWithAppelOffreDetail(@RequestBody AppelOffreVo appelOffreVo) {
-        AppelOffre appelOffre= appelOffreConverter.toItem(appelOffreVo);
-        AppelOffre appelOffre1= appelOffreService.saveAppelOffreWithAppelOffreDetails(appelOffre);
+        AppelOffre appelOffre = appelOffreConverter.toItem(appelOffreVo);
+        AppelOffre appelOffre1 = appelOffreService.saveAppelOffreWithAppelOffreDetails(appelOffre);
         return appelOffreConverter.toVo(appelOffre);
     }
 
@@ -61,7 +85,5 @@ public class AppelOffreRest {
     public void setAppelOffreConverter(AbstractConverter<AppelOffre, AppelOffreVo> appelOffreConverter) {
         this.appelOffreConverter = appelOffreConverter;
     }
-
-   
 
 }

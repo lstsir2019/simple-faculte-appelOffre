@@ -6,6 +6,7 @@
 package com.faculte.appelOffre.AppelOffre.service;
 
 import com.faculte.appelOffre.AppelOffre.bean.AppelOffre;
+import java.util.List;
 
 /**
  *
@@ -16,5 +17,6 @@ public interface AppelOffreService {
     public AppelOffre saveAppelOffreWithAppelOffreDetails(AppelOffre appelOffre);
 
     public AppelOffre findByObjectif(String Objectif);
+    public List<AppelOffre> findAll();
 
 }

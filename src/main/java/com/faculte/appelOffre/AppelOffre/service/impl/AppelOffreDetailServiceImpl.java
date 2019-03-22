@@ -31,8 +31,8 @@ public class AppelOffreDetailServiceImpl implements AppelOffreDetailService {
 
 
 @Override
-        public List<AppelOffre> findByAppelOffre(AppelOffre appelOffre) {
-        return appelOffreDetailDao.findByAppelOffre(appelOffre);
+        public List<AppelOffreDetail> findByAppelOffreObjectif(String objectif) {
+        return appelOffreDetailDao.findByAppelOffreObjectif(objectif);
     }
 
     public AppelOffreDetailDao getAppelOffreDetailDao() {
