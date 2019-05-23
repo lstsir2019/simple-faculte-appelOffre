@@ -5,6 +5,7 @@
  */
 package com.faculte.appelOffre.AppelOffre.domain.rest;
 
+import com.faculte.appelOffre.AppelOffre.common.util.GeneratePdf;
 import com.faculte.appelOffre.AppelOffre.domain.rest.converter.AbstractConverter;
 import com.faculte.appelOffre.AppelOffre.domain.rest.converter.AppelOffreConverter;
 import com.faculte.appelOffre.AppelOffre.domain.rest.Vo.AppelOffreDetailVo;
@@ -13,13 +14,22 @@ import com.faculte.appelOffre.AppelOffre.domain.rest.Vo.OffreVo;
 import com.faculte.appelOffre.AppelOffre.domain.bean.AppelOffre;
 import com.faculte.appelOffre.AppelOffre.domain.bean.AppelOffreDetail;
 import com.faculte.appelOffre.AppelOffre.domain.bean.Offre;
+import com.faculte.appelOffre.AppelOffre.domain.bean.OffreDetail;
 import com.faculte.appelOffre.AppelOffre.domain.model.service.AppelOffreDetailService;
 import com.faculte.appelOffre.AppelOffre.domain.model.service.AppelOffreService;
+import com.faculte.appelOffre.AppelOffre.domain.model.service.OffreDetailService;
+import com.faculte.appelOffre.AppelOffre.domain.model.service.OffreService;
+import com.faculte.appelOffre.AppelOffre.domain.rest.Vo.OffreDetailVo;
 import com.fst.commandeapiv4.common.util.DateUtil;
-import java.util.Date;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +53,12 @@ public class AppelOffreRest {
     private AppelOffreService appelOffreService;
 
     @Autowired
+    private OffreService offreService;
+
+    @Autowired
+    private OffreDetailService offreDetailService;
+
+    @Autowired
     private AppelOffreDetailService appelOffreDetailService;
 
     @Autowired
@@ -56,6 +72,9 @@ public class AppelOffreRest {
     @Autowired
     @Qualifier("appelOffreDetailConverter")
     private AbstractConverter<AppelOffreDetail, AppelOffreDetailVo> appelOffreDetailConverter;
+    @Autowired
+    @Qualifier("offreDetailsConverter")
+    private AbstractConverter<OffreDetail, OffreDetailVo> offreDetailConverter;
 
     @GetMapping("/objectif/{objectif}/appeloffre-details")
     public List<AppelOffreDetailVo> findByAppelOffre(@PathVariable("objectif") String objectif) {
@@ -72,6 +91,39 @@ public class AppelOffreRest {
     @GetMapping("/reference/{reference}")
     public AppelOffreVo findByReference(@PathVariable("reference") String reference) {
         return appelOffreConverter.toVo(appelOffreService.findByReference(reference));
+    }
+
+    @GetMapping("/pdf/reference/{reference}")
+    public ResponseEntity<Object> CommandePrint(@PathVariable String reference) throws JRException, IOException {
+        AppelOffre appelOffre = appelOffreService.findByReference(reference);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("objectif", appelOffre.getObjectif());
+        parameters.put("reference", appelOffre.getReference());
+        parameters.put("HT", String.valueOf(appelOffre.getMontantHT()));
+        parameters.put("ttc", String.valueOf(appelOffre.getMontantTTC()));
+        parameters.put("Mgt", String.valueOf(appelOffre.getMontantGarantieTemp()));
+        parameters.put("tva", String.valueOf(appelOffre.getTva()));
+        List<OffreDetailVo> offreDetails = new ArrayList<>();
+        if (appelOffre.getOffreSelected() != null) {
+            parameters.put("referenceOffre", appelOffre.getOffreSelected().getReference());
+            parameters.put("montantTtcOffre", String.valueOf(appelOffre.getOffreSelected().getMontantTtc()));
+            parameters.put("montantHtOffre", String.valueOf(appelOffre.getOffreSelected().getMontantHt()));
+            parameters.put("tvaOffre", String.valueOf(appelOffre.getOffreSelected().getTva()));
+            parameters.put("fournisseur", appelOffre.getOffreSelected().getRefrenceFournisseur());
+            offreDetails = offreDetailConverter.toVo(offreDetailService.findByOffreReference(appelOffre.getOffreSelected().getReference()));
+
+        } else {
+            parameters.put("montantTtcOffre", " ");
+            parameters.put("montantHtOffre", " ");
+            parameters.put("tvaOffre", " ");
+            parameters.put("fournisseur", " ");
+        }
+        if (offreDetails.isEmpty()) {
+            offreDetails.add(new OffreDetailVo());
+        }
+
+        return GeneratePdf.generate("appelOffre", parameters, offreDetails, "/reports/AppelOffre.jasper");
     }
 
     @GetMapping("/")
@@ -100,21 +152,17 @@ public class AppelOffreRest {
     public AppelOffre removeByReference(@PathVariable String reference) {
         return appelOffreService.removeByReference(reference);
     }
-    
-    
 
     @PostMapping("/criteria")
     public List<AppelOffreVo> findByCriteria(@RequestBody AppelOffreVo appelOffreVo) {
         System.out.println(appelOffreVo);
         return appelOffreConverter.toVo(appelOffreService.findByCriteria(DateUtil.parse(appelOffreVo.getDateMin()), DateUtil.parse(appelOffreVo.getDateMax()), appelOffreVo.getObjectif(), appelOffreVo.getReference()));
     }
-    
-    @GetMapping("/reference/{reference}")
+
+    @GetMapping("/refrence/{reference}/selected")
     public OffreVo findOffreSelectedByReference(@PathVariable String reference) {
         return offreConverter.toVo(appelOffreService.findOffreSelectedByReference(reference));
     }
-    
-    
 
     public AppelOffreService getAppelOffreService() {
         return appelOffreService;

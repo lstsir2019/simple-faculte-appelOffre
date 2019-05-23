@@ -8,6 +8,7 @@ package com.faculte.appelOffre.AppelOffre.domain.model.dao;
 import com.faculte.appelOffre.AppelOffre.domain.bean.AppelOffre;
 import com.faculte.appelOffre.AppelOffre.domain.bean.Offre;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -18,11 +19,10 @@ import org.springframework.stereotype.Repository;
 public interface AppelOffreDao extends JpaRepository<AppelOffre, Long> {
 
     public AppelOffre findByObjectif(String Objectif);
-    
-    public AppelOffre findByReference(String reference);
-    
-    public Offre findOffreSelectedByReference(String reference);
-    
-    
-}
 
+    public AppelOffre findByReference(String reference);
+
+    @Query("SELECT a.offreSelected From AppelOffre a WHERE a.reference=?1")
+    public Offre findOffreSelectedByReference(String reference);
+
+}

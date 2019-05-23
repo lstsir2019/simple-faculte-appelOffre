@@ -82,7 +82,7 @@ public class OffreRest {
     }
 
     @GetMapping("/apeloffre/reference/{reference}")
-    public List<OffreVo> findByAppelOffreReference(@PathVariable String reference) {
+    public List<OffreVo> findOffreSelectedByAppelOffreReference(@PathVariable String reference) {
         OffreConverter offreConverter = new OffreConverter();
         return offreConverter.toVo(offreService.findByAppelOffreReference(reference));
     }
