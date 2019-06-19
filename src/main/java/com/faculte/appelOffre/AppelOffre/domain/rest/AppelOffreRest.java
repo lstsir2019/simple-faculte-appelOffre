@@ -94,7 +94,7 @@ public class AppelOffreRest {
     }
 
     @GetMapping("/pdf/reference/{reference}")
-    public ResponseEntity<Object> CommandePrint(@PathVariable String reference) throws JRException, IOException {
+    public ResponseEntity<Object> imprimerAppelOffreWithOffre(@PathVariable String reference) throws JRException, IOException {
         AppelOffre appelOffre = appelOffreService.findByReference(reference);
 
         Map<String, Object> parameters = new HashMap<>();
@@ -124,6 +124,26 @@ public class AppelOffreRest {
         }
 
         return GeneratePdf.generate("appelOffre", parameters, offreDetails, "/reports/AppelOffre.jasper");
+    }
+
+    @GetMapping("/pdf/referenceOffres/{reference}")
+    public ResponseEntity<Object> imprimerAppelOffreWithOffres(@PathVariable String reference) throws JRException, IOException {
+        AppelOffre appelOffre = appelOffreService.findByReference(reference);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("objectif", appelOffre.getObjectif());
+        parameters.put("reference", appelOffre.getReference());
+        parameters.put("HT", String.valueOf(appelOffre.getMontantHT()));
+        parameters.put("ttc", String.valueOf(appelOffre.getMontantTTC()));
+        parameters.put("Mgt", String.valueOf(appelOffre.getMontantGarantieTemp()));
+        parameters.put("tva", String.valueOf(appelOffre.getTva()));
+        List<OffreVo> offres = offreConverter.toVo(offreService.findByAppelOffreReference(reference));
+
+        if (offres.isEmpty()) {
+            offres.add(new OffreVo());
+        }
+
+        return GeneratePdf.generate("appelOffre", parameters, offres, "/reports/AppelOffreWithOffre.jasper");
     }
 
     @GetMapping("/")
