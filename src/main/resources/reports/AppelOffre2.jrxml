@@ -28,7 +28,7 @@
 		<band height="399" splitType="Stretch">
 			<image>
 				<reportElement x="139" y="-99" width="301" height="99" uuid="60f71195-b3e5-4877-aab1-b30f54c33395"/>
-				<imageExpression><![CDATA["C:\\simple-faculte\\budget\\assets\\image\\fstg.png"]]></imageExpression>
+				<imageExpression><![CDATA["C:\\simple-faculte\\appelOffre\\assets\\image\\fstg.png"]]></imageExpression>
 			</image>
 			<rectangle>
 				<reportElement mode="Opaque" x="0" y="21" width="221" height="13" isRemoveLineWhenBlank="true" forecolor="#F0F0F0" backcolor="#FF9900" uuid="c63cfe4d-51bf-4947-93ce-40948b9083d8"/>
