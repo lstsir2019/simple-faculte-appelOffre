@@ -104,6 +104,7 @@ public class AppelOffreRest {
         parameters.put("ttc", String.valueOf(appelOffre.getMontantTTC()));
         parameters.put("Mgt", String.valueOf(appelOffre.getMontantGarantieTemp()));
         parameters.put("tva", String.valueOf(appelOffre.getTva()));
+        parameters.put("date", String.valueOf(appelOffre.getDate()));
         List<OffreDetailVo> offreDetails = new ArrayList<>();
         if (appelOffre.getOffreSelected() != null) {
             parameters.put("referenceOffre", appelOffre.getOffreSelected().getReference());
@@ -123,7 +124,7 @@ public class AppelOffreRest {
             offreDetails.add(new OffreDetailVo());
         }
 
-        return GeneratePdf.generate("appelOffre", parameters, offreDetails, "/reports/AppelOffre.jasper");
+        return GeneratePdf.generate("appelOffre", parameters, offreDetails, "/reports/AppelOffre2.jasper");
     }
 
     @GetMapping("/pdf/referenceOffres/{reference}")
